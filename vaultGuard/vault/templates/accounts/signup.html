@@ -1,0 +1,83 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+
+{% block title %}Sign Up - VaultGuard{% endblock %}
+
+{% block content %}
+<div class="flex flex-col w-full md:w-1/2 xl:w-2/5 mx-auto p-8 bg-[#ffffff] rounded-2xl shadow-xl">
+    <div class="flex flex-col justify-center mx-auto items-center gap-3 pb-4">
+        <h1 class="text-2xl font-bold text-[#4B5563]">Vault Guard</h1>
+    </div>
+    <div class="text-base font-light text-[#6B7280] pb-8 mx-auto">Sign up for an account on Your Company.</div>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="p-4 mb-2 text-sm {% if message.tags == 'success' %}text-green-700 bg-green-100{% elif message.tags == 'error' %}text-red-700 bg-red-100{% else %}text-blue-700 bg-blue-100{% endif %} rounded-lg" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form class="flex flex-col" method="POST" action="{% url 'signup' %}">
+        {% csrf_token %}
+        <div class="pb-2">
+            <label for="id_name" class="block mb-2 text-sm font-medium text-[#111827]">Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="text-red-500 text-sm mt-1">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="pb-2">
+            <label for="id_email" class="block mb-2 text-sm font-medium text-[#111827]">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="text-red-500 text-sm mt-1">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="pb-2">
+            <label for="id_password1" class="block mb-2 text-sm font-medium text-[#111827]">Master Password</label>
+            <div class="relative">
+                {{ form.password1 }}
+                <button type="button" class="absolute inset-y-0 right-0 px-3" onclick="togglePasswordVisibility('id_password1', 'eyeIcon1')">
+                    <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+            {% if form.password1.errors %}
+                <div class="text-red-500 text-sm mt-1">{{ form.password1.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="pb-6">
+            <label for="id_password2" class="block mb-2 text-sm font-medium text-[#111827]">Confirm Master Password</label>
+            <div class="relative">
+                {{ form.password2 }}
+                <button type="button" class="absolute inset-y-0 right-0 px-3" onclick="togglePasswordVisibility('id_password2', 'eyeIcon2')">
+                    <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+            {% if form.password2.errors %}
+                <div class="text-red-500 text-sm mt-1">{{ form.password2.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="w-full text-white bg-[#4F46E5] font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign Up</button>
+        <div class="text-sm font-light text-[#6B7280] mt-4">I have an account? <a href="{% url 'signin' %}" class="font-medium text-[#7470c9] hover:underline">Sign in</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/register.js' %}"></script>
+{% endblock %}
+

@@ -1,0 +1,261 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+
+{% block title %}Vault Guard - Add Entry{% endblock %}
+
+{% block extra_css %}
+<style>
+    .container {
+        height: 100vh;
+        background-color: #fff;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background-color: #1a73e8;
+        color: white;
+    }
+
+    .back-btn {
+        color: white;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+    }
+
+    .save-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+    }
+
+    .form-container {
+        padding: 1rem;
+    }
+
+    .form-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: #666;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.5rem 2.5rem 0.5rem 0;
+        border: none;
+        border-bottom: 1px solid #ddd;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-bottom-color: #1a73e8;
+    }
+
+    .icon-button {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        padding: 0.25rem;
+    }
+
+    .edit-button {
+        color: #1a73e8;
+    }
+
+    .password-controls {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .icon-tangle,
+    .icon-generator {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        padding: 0.25rem;
+    }
+
+    textarea {
+        resize: none;
+        min-height: 100px;
+    }
+
+    /* Error message styling */
+    .error-message {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="header">
+        <a href="{% url 'home' %}" class="back-btn">←</a>
+        <h1>Add New Entry</h1>
+        <button type="submit" form="entry-form" class="save-btn">SAVE</button>
+    </header>
+    
+    <main class="form-container">
+        <form id="entry-form" method="POST" action="{% url 'add_entry' %}">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="error-message">
+                Please correct the errors below.
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Title</label>
+                {{ form.title }}
+                <button type="button" class="icon-button edit-button">✎</button>
+                {% if form.title.errors %}
+                <div class="error-message">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.account.id_for_label }}">Account</label>
+                {{ form.account }}
+                <button type="button" class="icon-button clear-input">✕</button>
+                {% if form.account.errors %}
+                <div class="error-message">{{ form.account.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                <button type="button" class="icon-button clear-input">✕</button>
+                {% if form.username.errors %}
+                <div class="error-message">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                <div class="password-controls">
+                    <button type="button" class="icon-tangle" id="eyeIcon">🙊</button>
+                    <button type="button" class="icon-generator" id="generatePassword">🔄</button>
+                    <button type="button" class="icon-button clear-input">✕</button>
+                </div>
+                {% if form.password.errors %}
+                <div class="error-message">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.website.id_for_label }}">Website</label>
+                {{ form.website }}
+                <button type="button" class="icon-button clear-input">✕</button>
+                {% if form.website.errors %}
+                <div class="error-message">{{ form.website.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.notes.id_for_label }}">Notes</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                <div class="error-message">{{ form.notes.errors }}</div>
+                {% endif %}
+            </div>
+        </form>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Password visibility toggle
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.textContent = '🙊';
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.textContent = '🙈';
+        }
+    }
+
+    document.getElementById('eyeIcon').addEventListener('click', togglePasswordVisibility);
+
+    // Password generation
+    function fetchPassword() {
+        fetch('{% url "generate_password" %}')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('{{ form.password.id_for_label }}').value = data.password;
+            })
+            .catch(error => console.error('Error fetching password:', error));
+    }
+
+    document.getElementById('generatePassword').addEventListener('click', fetchPassword);
+
+    // Clear input fields
+    document.querySelectorAll('.clear-input').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('input, textarea');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+        });
+    });
+
+    // Form submission handling
+    document.getElementById('entry-form').addEventListener('submit', function(e) {
+        const requiredFields = ['title', 'password'];
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            const input = this.querySelector(`[name="${field}"]`);
+            if (input && !input.value.trim()) {
+                isValid = false;
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
+                input.parentElement.appendChild(errorDiv);
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+</script>
+{% endblock %}
+

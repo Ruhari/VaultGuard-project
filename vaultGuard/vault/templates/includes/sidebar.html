@@ -1,0 +1,53 @@
+<nav class="sidebar">
+    <div class="sidebar-content">
+        <a href="{% url 'home' %}" class="sidebar-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            My Vault
+        </a>
+        <a href="{% url 'ai_assistance' %}" class="sidebar-item {% if request.resolver_match.url_name == 'ai_assistance' %}active{% endif %}">
+            AI Assistance
+        </a>
+        <a href="{% url 'generator' %}" class="sidebar-item {% if request.resolver_match.url_name == 'generator' %}active{% endif %}">
+            Generator
+        </a>
+    </div>
+</nav>
+
+<style>
+    .sidebar {
+        width: 250px;
+        background-color: #ffffff;
+        position: fixed;
+        left: 0;
+        top: 60px;
+        height: 100vh;
+        border-right: 1px solid #e5e7eb;
+        padding-top: 20px;
+    }
+
+    .sidebar-content {
+        padding: 0px;
+    }
+
+    .sidebar-item {
+        display: block;
+        padding: 12px 16px;
+        color: #000000;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .sidebar-item:hover {
+        background-color: #f3f4f6;
+    }
+
+    .sidebar-item.active {
+        background-color: #1a73e8;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 10px;
+        text-align: center;
+    }
+</style>
